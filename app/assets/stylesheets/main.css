@@ -11,14 +11,15 @@ body {
   font-weight: 400;
   color: #67675a;
   margin-bottom: 70px;
-  margin-top: 80px;
+  margin-top: 114px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 .navbar-inverse {
-  background-color: #2f172f;
+  background-color: white;
   border-color: transparent;
+border-bottom: 2px solid #F47A14;
 }
 
 .navbar-toggle .text-bar {
@@ -123,7 +124,7 @@ a.btn:visited {
 }
 
 .btn-default {
-  color: #e6e6c9;
+/  color: #e6e6c9;
   background-color: #a6a691;
   border-color: transparent;
   border-bottom: 2px solid #7c7c6d;
@@ -305,8 +306,9 @@ a.btn:visited {
 }
 
 #site-logo #defci {
+margin-top: 4px;
   text-align: center;
-  color: #B99EAF;
+  color: #555;
 }
 
 #beta {
