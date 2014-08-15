@@ -33,11 +33,18 @@ class BillsController < ApplicationController
   # GET /bills/1.json
   def show
     @condition_bill_header = true
-    @bill = Bill.find_by(uid: params[:id])
-    if @bill.nil?
-      render text: "", :status => 404
+    if params[:fields]
+      fields = params[:fields].split(',')
+      @bill = Bill.only(fields).find_by(uid: params[:id])
+      # render json: @bill.to_json(only: fields)
+      respond_with @bill, :callback => params['callback'], :represent_with => Billit::BillBasicRepresenter
     else
-      respond_with @bill, :represent_with => Billit::BillRepresenter
+      @bill = Bill.find_by(uid: params[:id])
+      if @bill.nil?
+        render text: "", :status => 404
+      else
+        respond_with @bill, :callback => params['callback'], :represent_with => Billit::BillRepresenter
+      end
     end
   end
 
@@ -48,9 +55,16 @@ class BillsController < ApplicationController
     #Sunspot.index!(Bill.all)   # en caso de cambio en modelo
     search = search_for(params)
     @bills = search.results
-    @bills.extend(Billit::BillPageRepresenter)
-    @bills_query = Billit::BillPage.new.from_json(@bills.to_json(params))
-    respond_with @bills.to_json(params), represent_with: Billit::BillPageRepresenter
+    if params[:fields]
+      fields = params[:fields].split(',')
+      @bills.map! {|bill| Bill.only(fields).find_by(uid: bill.uid)}
+      @bills.extend(Billit::BillPageRepresenter)
+      respond_with @bills.to_json(params), :callback => params['callback'], represent_with: Billit::BillPageRepresenter
+    else
+      @bills.extend(Billit::BillPageRepresenter)
+      @bills_query = Billit::BillPage.new.from_json(@bills.to_json(params))
+      respond_with @bills.to_json(params), :callback => params['callback'], represent_with: Billit::BillPageRepresenter
+    end
   end
   alias index search
 
@@ -94,26 +108,30 @@ class BillsController < ApplicationController
   # PUT /bills/1
   # PUT /bills/1.json
   def update
-    #@bill = Bill.find_by(uid:params[:id]).extend(Billit::BillRepresenter)
-    p uid:params[:id]
-    @bill = Bill.find_by(uid:params[:id])
-    begin
-      @bill.from_json(request.body.read)
-    rescue MultiJson::LoadError
-      params[:bill].keys.each do |key|
-        # if key == 'tags'
-        #   @bill.tags = params[:bill][:tags].split(/,|;|\|/)
-        # else
-          @bill.send(key.to_s + "=", params[:bill][key])
-        # end
+    @bill = Bill.find_by(uid:params[:id]).extend(Billit::BillRepresenter)
+    # @bill = Bill.find_by(uid:params[:id])
+    if params[:tags]
+      @bill.tags = params[:tags]
+      @bill.save
+    else
+      begin
+        @bill.from_json(request.body.read)
+      rescue MultiJson::LoadError
+        params[:bill].keys.each do |key|
+          # if key == 'tags'
+          #   @bill.tags = params[:bill][:tags].split(/,|;|\|/)
+          # else
+            @bill.send(key.to_s + "=", params[:bill][key])
+          # end
+        end
       end
-    end
-    @bill.save
-    begin
-      Sunspot.index!(@bill)
-    rescue
-      puts "#{$!}"
-      puts "unindexed bill: " + @bill.uid
+      @bill.save
+      begin
+        Sunspot.index!(@bill)
+      rescue
+        puts "#{$!}"
+        puts "unindexed bill: " + @bill.uid
+      end
     end
     respond_with @bill, :represent_with => Billit::BillRepresenter
   end

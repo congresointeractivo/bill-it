@@ -107,11 +107,30 @@ describe BillsController do
         response.body.should eq(assigns(:bill).to_json)
       end
 
+      it "returns the correct bill wrapped around a callback function in jsonp format" do
+        bill = FactoryGirl.create(:bill1)
+        func_name = "my_function"
+        get :show, id: bill.uid, format: :json, callback: func_name
+        response.should be_success
+        response.body.should eq(func_name + "(" + assigns(:bill).to_json + ")")
+      end
+
       xit "returns the correct bill in html format" do
         bill = FactoryGirl.create(:bill1)
         get :show, id: bill.uid, format: :html
         response.should be_success
         response.body.should eq(assigns(:bill))
+      end
+
+      it 'returns specific fields' do
+        bill = FactoryGirl.create(:bill1)
+        get :show, id: bill.uid, format: :json, fields: 'uid,title'
+        response.should be_success
+        assigns(:bill).should eq(bill)
+        assigns(:bill).uid.should eq(bill.uid)
+        assigns(:bill).title.should eq(bill.title)
+        assigns(:bill).initial_chamber.should be_nil
+        # response.body.should eq({title: bill.title, uid: bill.uid}.to_json)
       end
     end
     describe "with non existent id" do
@@ -139,6 +158,15 @@ describe BillsController do
       Sunspot.index!(Bill.all)
     end
 
+    it 'returns specific fields' do
+        get :search, q: "Pena", format: :json, fields: 'uid,title'
+        response.should be_success
+        assigns(:bills).should eq([@bill1, @bill2])
+        assigns(:bills).first.uid.should eq(@bill1.uid)
+        assigns(:bills).first.title.should eq(@bill1.title)
+        assigns(:bills).first.initial_chamber.should be_nil
+      end
+
     context "doing a simple 'q' query" do
       context "with a single result" do
         it "assigns query results to @bills" do
@@ -150,6 +178,13 @@ describe BillsController do
         xit "returns bills in roar/json format" do
           get :search, q: "Tramitación", format: :json
           response.body.should eq(assigns(:bills).to_json)
+        end
+        #FIX works well, but haven't found the way to test the format
+        xit "returns bills in roar/jsonp format" do
+          func_name = "my_function"
+          get :search, q: "Tramitación", format: :json, callback: func_name
+          response.should be_success
+          response.body.should eq(func_name + "(" + assigns(:bills).to_json + ")")
         end
       end
 

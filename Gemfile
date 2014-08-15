@@ -3,6 +3,8 @@ source 'https://rubygems.org'
 gem 'rails', '~> 3.2'
 gem "jquery-rails", "~> 2.2"
 gem 'haml-rails', '~> 0.4'
+gem 'uglifier'
+gem 'newrelic_rpm'
 
 #Search
 gem 'sunspot_mongoid2'
@@ -14,7 +16,7 @@ gem 'progress_bar'
 #Representers
 # gem 'roar', '~> 0.11.19'
 gem 'roar-rails', "0.1.0"
-gem 'billit_representers', '0.9.3'
+gem 'billit_representers', '0.9.7'
 gem 'will_paginate', '~> 3.0'
 
 #Dates
@@ -34,7 +36,6 @@ group :development, :test do
   gem 'guard-rails'
   gem 'guard-rspec'
   gem 'awesome_print'
-  gem 'newrelic_rpm'
 end
 
 group :development do
@@ -51,3 +52,6 @@ group :test do
   gem 'faker'
   gem 'webmock'
 end
+
+#Javascript Runtime, If you have nodejs you can comment this line
+gem 'therubyracer'

@@ -1,5 +1,17 @@
 BillIt::Application.routes.draw do
 
+  resources :votes
+
+
+  resources :counts
+
+
+  resources :vote_events
+
+
+  resources :motions
+
+
   devise_for :admin_users, ActiveAdmin::Devise.config
   ActiveAdmin.routes(self)
 

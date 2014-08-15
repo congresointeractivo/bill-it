@@ -15,6 +15,7 @@ class Bill
   has_many :documents, autosave: true, class_name: "Document"
   embeds_many :directives, class_name: "Directive"
   has_many :remarks, autosave: true, class_name: "Remark"
+  has_many :motions, autosave: true, class_name: "Motion"
   embeds_many :revisions
   
   field :uid, type: String
@@ -67,20 +68,20 @@ class Bill
     return "Sin urgencia" if self.priorities.blank?
     all_priorities = self.priorities.in_memory.blank? ? self.priorities : self.priorities.in_memory
     latest_priority = all_priorities.reject{|x| x.entry_date.blank?}.sort{ |x,y| y.entry_date <=> x.entry_date }.first
-    return "Sin urgencia" if latest_priority.type == "Sin urgencia"
+    return "Sin urgencia" if latest_priority.type == "Sin urgencia" or latest_priority.entry_date > Date.today
     
     days_in_force = case latest_priority.type
       when "Discusión inmediata"
-        2
+        6
       when "Suma"
-        5
+        15
       when "Simple"
-        10
+        30
       else
         return "Sin urgencia"
     end
 
-    if (days_in_force.business_days.after latest_priority.entry_date) >= Date.today
+    if (latest_priority.entry_date + days_in_force.days) >= Date.today
       latest_priority.type
     else
       "Sin urgencia"
