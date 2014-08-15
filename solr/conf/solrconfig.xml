@@ -72,14 +72,14 @@
   <indexDefaults>
     <!-- Values here affect all index writers and act as a default unless overridden. -->
     <useCompoundFile>false</useCompoundFile>
-    <mergeFactor>10</mergeFactor>
+    <mergeFactor>40</mergeFactor>
     <!-- If both ramBufferSizeMB and maxBufferedDocs is set, then Lucene will flush
      based on whichever limit is hit first.  -->
     <!--<maxBufferedDocs>1000</maxBufferedDocs>-->
     <!-- Sets the amount of RAM that may be used by Lucene indexing
       for buffering added documents and deletions before they are
       flushed to the Directory.  -->
-    <ramBufferSizeMB>32</ramBufferSizeMB>
+    <ramBufferSizeMB>512</ramBufferSizeMB>
     <!-- <maxMergeDocs>2147483647</maxMergeDocs> -->
     <maxFieldLength>10000</maxFieldLength>
     <writeLockTimeout>1000</writeLockTimeout>
@@ -111,7 +111,7 @@
      background using separate threads.  The SerialMergeScheduler (Lucene 2.2
      default) does not.
      -->
-    <!--<mergeScheduler class="org.apache.lucene.index.ConcurrentMergeScheduler"/>-->
+    <mergeScheduler class="org.apache.lucene.index.ConcurrentMergeScheduler"/>
     <!--
       This option specifies which Lucene LockFactory implementation to use.
       
@@ -128,7 +128,7 @@
     <!--
      Expert:
     Controls how often Lucene loads terms into memory -->
-    <!--<termIndexInterval>256</termIndexInterval>-->
+    <termIndexInterval>1024</termIndexInterval>
   </indexDefaults>
   <mainIndex>
     <!-- options specific to the main on-disk lucene index -->

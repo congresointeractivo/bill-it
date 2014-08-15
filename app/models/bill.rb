@@ -9,11 +9,11 @@ class Bill
   before_save :arrayify, :standardize_tags, :set_current_priority
   after_save :index!
 
-  has_many :paperworks, autosave: true, class_name: "Paperwork"
+  embeds_many :paperworks, class_name: "Paperwork"
   has_many :priorities, autosave: true, class_name: "Priority"
   has_many :reports, autosave: true, class_name: "Report"
   has_many :documents, autosave: true, class_name: "Document"
-  has_many :directives, autosave: true, class_name: "Directive"
+  embeds_many :directives, class_name: "Directive"
   has_many :remarks, autosave: true, class_name: "Remark"
   embeds_many :revisions
   
@@ -34,6 +34,7 @@ class Bill
   field :tags, type: Array
   field :bill_draft_link, type: String
   field :current_priority, type: String
+  field :project_type, type: String
 
   scope :urgent, where(:current_priority.in => ["Discusión inmediata", "Suma", "Simple"])
 
@@ -55,6 +56,7 @@ class Bill
     time :publish_date
     text :tags
     time :updated_at
+    text :project_type
     #attachment type has to be a uri (local or remote)
     #if it's a string it will not get indexed
     attachment :bill_draft
