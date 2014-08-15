@@ -51,8 +51,8 @@ class BillsController < ApplicationController
   # GET /bills/search.json?q=search_string
   def search
     require 'will_paginate/array'
-    # Sunspot.remove_all(Bill)   # descomentar para reindexar,
-    # Sunspot.index!(Bill.all)   # en caso de cambio en modelo
+    #Sunspot.remove_all(Bill)   # descomentar para reindexar,
+    #Sunspot.index!(Bill.all)   # en caso de cambio en modelo
     search = search_for(params)
     @bills = search.results
     if params[:fields]
@@ -97,7 +97,7 @@ class BillsController < ApplicationController
     end
     @bill.save
     begin
-      Sunspot.index!(@bill)
+      Sunspot.index!(@bill) # indexing solr ENABLED
     rescue
       puts "#{$!}"
       puts "unindexed bill: " + @bill.uid
