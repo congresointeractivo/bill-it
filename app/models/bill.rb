@@ -60,8 +60,8 @@ class Bill
     text :project_type
     #attachment type has to be a uri (local or remote)
     #if it's a string it will not get indexed
-    attachment :bill_draft
-    attachment :law_text
+    #attachment :bill_draft
+    #attachment :law_text
   end
 
   def get_current_priority

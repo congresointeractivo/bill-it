@@ -87,7 +87,7 @@ class BillsController < ApplicationController
   # POST /bills
   # POST /bills.json
   def create
-    @bill = Bill.new.extend(Billit::BillRepresenter)
+    @bill = Bill.new.extend(Billit::BillRepresenter);
     begin
       @bill.from_json(request.body.read)
     rescue MultiJson::LoadError
@@ -100,7 +100,8 @@ class BillsController < ApplicationController
       Sunspot.index!(@bill) # indexing solr ENABLED
     rescue
       puts "#{$!}"
-      puts "unindexed bill: " + @bill.uid
+      puts "unindexed bill: "
+      puts @bill.uid
     end
     respond_with @bill, :represent_with => Billit::BillRepresenter
   end
@@ -195,6 +196,8 @@ class BillsController < ApplicationController
     filtered_conditions = filter_conditions(conditions)
 
     search = Sunspot.search(Bill) do
+      order_by :creation_date, :desc
+
       # FIX the equivalence conditions settings should be in a conf file
       # search over all fields
       if filtered_conditions[:equivalence_conditions].key?("q")
